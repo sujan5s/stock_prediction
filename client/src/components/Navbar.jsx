@@ -1,8 +1,35 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function Navbar() {
   const [search, setSearch] = useState('')
+  const [user, setUser] = useState(null)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) return
+
+      try {
+        const res = await fetch('http://localhost:5000/api/auth/user', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setUser(data)
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    fetchUser()
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    navigate('/')
+  }
 
   return (
     <nav className="app-navbar">
@@ -90,8 +117,9 @@ export default function Navbar() {
             <span className="material-symbols-outlined">notifications</span>
           </button>
 
-          {/* Avatar */}
-          <div
+{/* Avatar Link */}
+          <Link
+            to="/profile"
             style={{
               height: '40px',
               width: '40px',
@@ -99,18 +127,19 @@ export default function Navbar() {
               border: '2px solid #00E5FF',
               overflow: 'hidden',
               boxShadow: '0 0 15px rgba(0,229,255,0.3)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'linear-gradient(135deg,#00daf3,#006875)',
+              color: '#001f24',
+              fontWeight: 700,
+              fontSize: '14px',
+              textDecoration: 'none'
             }}
           >
-            <img
-              src="/images/avatar.png"
-              alt="User Avatar"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              onError={e => {
-                e.currentTarget.style.display = 'none'
-                e.currentTarget.parentElement.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;background:linear-gradient(135deg,#00daf3,#006875);color:#001f24">SJ</div>'
-              }}
-            />
-          </div>
+            {user ? user.fullName.charAt(0).toUpperCase() : 'U'}
+          </Link>
         </div>
       </div>
     </nav>

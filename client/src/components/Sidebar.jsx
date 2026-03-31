@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const navLinks = [
   { icon: 'dashboard', label: 'Dashboard', active: true },
@@ -9,6 +10,14 @@ const navLinks = [
 ]
 
 export default function Sidebar() {
+  const navigate = useNavigate()
+
+  const handleLogout = (e) => {
+    e.preventDefault()
+    localStorage.removeItem('token')
+    navigate('/')
+  }
+
   return (
     <aside className="app-sidebar">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: 'auto' }}>
@@ -83,6 +92,7 @@ export default function Sidebar() {
         </a>
         <a
           href="#"
+          onClick={handleLogout}
           style={{
             display: 'flex',
             alignItems: 'center',

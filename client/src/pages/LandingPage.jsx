@@ -1,8 +1,19 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import './LandingPage.css'
 
 export default function LandingPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const destPath = isAuthenticated ? '/dashboard' : '/login';
+
   return (
     <div className="landing-root">
       {/* Navbar */}
@@ -15,21 +26,33 @@ export default function LandingPage() {
              {/* Hidden on mobile, inline styles to hide simply for now */}
           </div>
           <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-            <Link to="/dashboard" className="active">Markets</Link>
-            <Link to="/dashboard">Predictions</Link>
-            <Link to="/dashboard">Intelligence</Link>
+            <Link to={destPath} className="active">Markets</Link>
+            <Link to={destPath}>Predictions</Link>
+            <Link to={destPath}>Intelligence</Link>
           </div>
           <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-            <Link to="/login" style={{ background: 'none', border: 'none', color: '#dfe2f1', cursor: 'pointer', fontWeight: 500, textDecoration: 'none' }}>
-              Login
-            </Link>
-            <Link to="/signup" style={{
-              background: '#00e5ff', color: '#00363d', padding: '0.6rem 1.5rem', 
-              borderRadius: '9999px', fontWeight: 700, textDecoration: 'none',
-              boxShadow: '0 0 20px rgba(0,229,255,0.3)'
-            }}>
-              Sign Up
-            </Link>
+            {isAuthenticated ? (
+              <Link to="/dashboard" style={{
+                background: '#00e5ff', color: '#00363d', padding: '0.6rem 1.5rem', 
+                borderRadius: '9999px', fontWeight: 700, textDecoration: 'none',
+                boxShadow: '0 0 20px rgba(0,229,255,0.3)'
+              }}>
+                Go to Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link to="/login" style={{ background: 'none', border: 'none', color: '#dfe2f1', cursor: 'pointer', fontWeight: 500, textDecoration: 'none' }}>
+                  Login
+                </Link>
+                <Link to="/signup" style={{
+                  background: '#00e5ff', color: '#00363d', padding: '0.6rem 1.5rem', 
+                  borderRadius: '9999px', fontWeight: 700, textDecoration: 'none',
+                  boxShadow: '0 0 20px rgba(0,229,255,0.3)'
+                }}>
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -66,10 +89,10 @@ export default function LandingPage() {
             Leverage neural architectures and real-time quantum analytics to predict market movements with institutional precision.
           </p>
           <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/signup" className="btn-primary" style={{ textDecoration: 'none' }}>
-              Sign Up for Free
+            <Link to={isAuthenticated ? "/dashboard" : "/signup"} className="btn-primary" style={{ textDecoration: 'none' }}>
+              {isAuthenticated ? "Enter Terminal" : "Sign Up for Free"}
             </Link>
-            <Link to="/dashboard" className="btn-ghost">
+            <Link to={destPath} className="btn-ghost">
               View Terminal
             </Link>
           </div>

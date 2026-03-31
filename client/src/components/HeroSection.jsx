@@ -1,6 +1,28 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 export default function HeroSection() {
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) return
+
+      try {
+        const res = await fetch('http://localhost:5000/api/auth/user', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setUser(data)
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    fetchUser()
+  }, [])
+
   return (
     <section
       style={{
@@ -40,10 +62,10 @@ export default function HeroSection() {
             color: '#c3f5ff',
           }}
         >
-          AI-Powered Stock Prediction
+          Welcome Back, {user ? user.fullName.split(' ')[0] : 'Trader'}
         </h1>
         <p style={{ fontSize: '1.25rem', marginBottom: '32px', color: '#bac9cc', fontFamily: 'Inter, sans-serif' }}>
-          Predict tomorrow's price with high-fidelity machine learning models trained on decades of market volatility.
+          Access your personalized dashboard. Predict tomorrow's price with high-fidelity machine learning models trained on decades of market volatility.
         </p>
         <button
           style={{

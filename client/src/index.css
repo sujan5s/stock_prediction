@@ -32,6 +32,10 @@ html, body, #root {
   min-height: 100vh;
 }
 
+html {
+  font-size: 85%; /* Reduced global font scale */
+}
+
 body {
   background-color: var(--bg);
   color: var(--on-surface);
@@ -137,7 +141,6 @@ img { display: block; max-width: 100%; }
   width: 256px;
   min-width: 256px;
   flex-shrink: 0;
-  min-height: calc(100vh - 72px);
   background: var(--bg);
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 500;
@@ -146,9 +149,9 @@ img { display: block; max-width: 100%; }
   flex-direction: column;
   box-shadow: 4px 0 20px rgba(0,0,0,0.3);
   position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
+  top: 73px;
+  height: calc(100vh - 73px);
+  overflow-y: hidden;
 }
 
 /* Main content */
