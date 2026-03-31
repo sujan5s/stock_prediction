@@ -1,0 +1,207 @@
+/* ===== DESIGN TOKENS (from Stitch design) ===== */
+:root {
+  --bg: #0f131d;
+  --surface-low: #171b26;
+  --surface: #1c1f2a;
+  --surface-high: #262a35;
+  --surface-highest: #313540;
+  --on-surface: #dfe2f1;
+  --on-surface-muted: #bac9cc;
+  --primary: #c3f5ff;
+  --primary-dim: #00daf3;
+  --primary-accent: #00e5ff;
+  --on-primary: #00363d;
+  --secondary-green: #00e38b;
+  --secondary-container: #16ff9e;
+  --tertiary: #fbe6ff;
+  --tertiary-container: #eec1ff;
+  --on-tertiary-container: #8a1ebd;
+  --error: #ffb4ab;
+  --outline: #849396;
+  --outline-variant: #3b494c;
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  min-height: 100vh;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--on-surface);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; border: none; background: none; font: inherit; }
+img { display: block; max-width: 100%; }
+
+/* ===== MATERIAL SYMBOLS ===== */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== GLASS EFFECT ===== */
+.glass {
+  background: rgba(28, 31, 42, 0.6);
+  backdrop-filter: blur(20px);
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #0a0e18; }
+::-webkit-scrollbar-thumb { background: #3b494c; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #00daf3; }
+
+/* ===== ANIMATIONS ===== */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(0,229,255,0.3); }
+  50% { box-shadow: 0 0 30px rgba(0,229,255,0.6); }
+}
+.glow-pulse { animation: pulse-glow 2s ease-in-out infinite; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.float-animation { animation: float 4s ease-in-out infinite; }
+
+@keyframes draw-line {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+.chart-line { stroke-dasharray: 1000; animation: draw-line 2s ease-out forwards; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ===== APP LAYOUT ===== */
+.app-shell {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--on-surface);
+}
+
+/* Navbar */
+.app-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(15,19,29,0.6);
+  backdrop-filter: blur(24px);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+  border-bottom: 1px solid rgba(59,73,76,0.2);
+}
+
+.app-navbar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 16px 24px;
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
+/* Sidebar + Main wrapper */
+.app-body {
+  display: flex;
+}
+
+/* Sidebar */
+.app-sidebar {
+  width: 256px;
+  min-width: 256px;
+  flex-shrink: 0;
+  min-height: calc(100vh - 72px);
+  background: var(--bg);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* Main content */
+.app-main {
+  flex: 1;
+  min-width: 0;
+  padding: 40px;
+}
+
+/* Dashboard grid: 2 columns on desktop */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+}
+
+.dashboard-col {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 1023px) {
+  .app-sidebar {
+    display: none;
+  }
+
+  .app-main {
+    padding: 24px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile bottom nav */
+.app-mobile-nav {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .app-mobile-nav {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 50;
+    background: rgba(15,19,29,0.8);
+    backdrop-filter: blur(24px);
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+    border-top-left-radius: 3rem;
+    border-top-right-radius: 3rem;
+  }
+}

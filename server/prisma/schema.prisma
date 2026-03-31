@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// NOTE: Prisma v7 moves the datasource URL to prisma.config.ts
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Models ─────────────────────────────────────────────────────────────
+
+// Prediction History — stores each ML prediction result
+model Prediction {
+  id          Int      @id @default(autoincrement())
+  symbol      String   // e.g. "RELIANCE"
+  openPrice   Float
+  highPrice   Float
+  lowPrice    Float
+  closePrice  Float
+  volume      Float
+  predictedPrice Float
+  confidence  Float?   // e.g. 0.94
+  predictedAt DateTime @default(now())
+
+  @@index([symbol])
+}
+
+// Watchlist — stocks a user is tracking
+model Watchlist {
+  id        Int      @id @default(autoincrement())
+  symbol    String   @unique
+  name      String
+  addedAt   DateTime @default(now())
+}
+
+// User — handles authentication
+model User {
+  id        Int      @id @default(autoincrement())
+  fullName  String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
