@@ -1,16 +1,17 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const navLinks = [
-  { icon: 'dashboard', label: 'Dashboard', active: true },
-  { icon: 'query_stats', label: 'Predictions' },
-  { icon: 'show_chart', label: 'Markets' },
-  { icon: 'account_balance_wallet', label: 'Portfolio' },
-  { icon: 'psychology', label: 'AI Insights' },
+  { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
+  { icon: 'query_stats', label: 'Next Day Predictions', path: '/prediction' },
+  { icon: 'show_chart', label: 'Markets', path: '#' },
+  { icon: 'account_balance_wallet', label: 'Portfolio', path: '#' },
+  { icon: 'psychology', label: 'AI Insights', path: '#' },
 ]
 
 export default function Sidebar() {
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleLogout = (e) => {
     e.preventDefault()
@@ -21,11 +22,16 @@ export default function Sidebar() {
   return (
     <aside className="app-sidebar">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: 'auto' }}>
-        {navLinks.map((link) =>
-          link.active ? (
+        {navLinks.map((link) => {
+          const isActive = location.pathname === link.path;
+          return isActive ? (
             <a
               key={link.label}
               href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(link.path || '#');
+              }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -45,6 +51,10 @@ export default function Sidebar() {
             <a
               key={link.label}
               href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(link.path || '#');
+              }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -67,7 +77,7 @@ export default function Sidebar() {
               {link.label}
             </a>
           )
-        )}
+        })}
       </div>
 
       
