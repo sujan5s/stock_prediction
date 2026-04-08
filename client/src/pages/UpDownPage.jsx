@@ -46,7 +46,7 @@ export default function UpDownPage() {
   };
 
   const isUp = result && result.prediction === 'UP';
-  const confidencePct = result ? (result.confidence * 100).toFixed(1) : 0;
+  const confidencePct = result ? result.confidence.toFixed(1) : 0;
 
   return (
     <div className="app-shell">
