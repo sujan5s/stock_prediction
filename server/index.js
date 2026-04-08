@@ -31,6 +31,19 @@ app.post('/api/predict', async (req, res) => {
     }
 });
 
+app.post('/api/signal', async (req, res) => {
+    try {
+        const response = await axios.post(`${FLASK_URL}/signal`, req.body);
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error calling Flask ML bridge signal:', error.message);
+        if (error.response && error.response.data && error.response.data.error) {
+            return res.status(400).json({ error: error.response.data.error });  
+        }
+        res.status(500).json({ error: 'Failed to get signal from ML model' });
+    }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.json({ status: 'Node.js server is running' });

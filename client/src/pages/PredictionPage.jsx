@@ -1,10 +1,26 @@
 import { useState, useEffect } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, BarChart, Bar, Cell, ComposedChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, RefreshCw, BarChart2, Activity, ArrowUpRight, ArrowDownRight, Search } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import MobileNav from '../components/MobileNav';
 import '../index.css';
+
+// Custom shape for the Candlestick logic
+const CandlestickShape = (props) => {
+  const {
+    x, y, width, height, payload,
+  } = props;
+  const isUp = payload.close >= payload.open;
+  const color = isUp ? '#00e38b' : '#ff4d4d';
+  
+  // We need to map high, low, open, close. But our `height` and `y` from Recharts 
+  // only tell us the size of [min(open, close), max(open, close)]. 
+  // To draw the wick, we need the mathematical scale or we can simply use the pre-calculated `wick` Bar layer.
+  return (
+    <rect x={x} y={y} width={width} height={height} fill={color} />
+  );
+};
 
 export default function PredictionPage() {
   const [stock, setStock] = useState('RELIANCE');
@@ -12,6 +28,7 @@ export default function PredictionPage() {
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorText, setErrorText] = useState('');
+  const [chartType, setChartType] = useState('Candlestick'); // 'Area' or 'Candlestick'
 
   const [historicalData, setHistoricalData] = useState([]);
 
@@ -38,13 +55,27 @@ export default function PredictionPage() {
         metrics: data.metrics
       });
       
-      // We don't have historical graph data mapped from backend yet, so we keep it blank or make a dummy one just for visual, but won't show random pricing.
-      let mockGraph = [];
-      let currentPrice = data.current_price;
-      for (let i=0; i<5; i++) {
-        mockGraph.push({ date: `Day ${i+1}`, price: Math.round(currentPrice * (1 + (Math.random() * 0.02 - 0.01))) });
+      // Use real historical data instead of mock graph
+      if (data.historical_data && data.historical_data.length > 0) {
+        // We will process the real 30-day OHLCV data returned from the Flask ML Pipeline
+        const mappedData = data.historical_data.map(d => ({
+           date: new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+           price: d.close,  // for AreaChart backward compatibility
+           open: d.open,
+           high: d.high,
+           low: d.low,
+           close: d.close,
+           volume: d.volume,
+           // For simple Recharts Candlestick layering:
+           wick: [d.low, d.high],
+           body: [Math.min(d.open, d.close), Math.max(d.open, d.close)],
+           isUp: d.close >= d.open
+        }));
+        setHistoricalData(mappedData);
+      } else {
+        // Fallback gracefully 
+        setHistoricalData([]);
       }
-      setHistoricalData(mockGraph);
       
     } catch (error) {
       console.error(error);
@@ -99,27 +130,28 @@ export default function PredictionPage() {
                   }}
                   placeholder="Search Stock (e.g., RELIANCE)"
                   value={searchValue}
+                  onFocus={() => setSearchValue('')}
                   onChange={(e) => setSearchValue(e.target.value)}
                 />
                 <datalist id="stock-tickers">
-                  <option value="RELIANCE">Reliance Industries</option>
-                  <option value="TCS">Tata Consultancy</option>
-                  <option value="HDFCBANK">HDFC Bank</option>
-                  <option value="ICICIBANK">ICICI Bank</option>
-                  <option value="INFY">Infosys</option>
-                  <option value="SBIN">State Bank of India</option>
-                  <option value="BHARTIARTL">Bharti Airtel</option>
-                  <option value="ITC">ITC Limited</option>
-                  <option value="HINDUNILVR">Hindustan Unilever</option>
-                  <option value="LT">Larsen & Toubro</option>
+                  <option value="RELIANCE.NS">Reliance Industries</option>
+                  <option value="TCS.NS">Tata Consultancy</option>
+                  <option value="HDFCBANK.NS">HDFC Bank</option>
+                  <option value="ICICIBANK.NS">ICICI Bank</option>
+                  <option value="INFY.NS">Infosys</option>
+                  <option value="SBIN.NS">State Bank of India</option>
+                  <option value="BHARTIARTL.NS">Bharti Airtel</option>
+                  <option value="ITC.NS">ITC Limited</option>
+                  <option value="HINDUNILVR.NS">Hindustan Unilever</option>
+                  <option value="LT.NS">Larsen & Toubro</option>
                   <option value="BAJFINANCE">Bajaj Finance</option>
                   <option value="AXISBANK">Axis Bank</option>
                   <option value="HCLTECH">HCL Technologies</option>
                   <option value="MARUTI">Maruti Suzuki</option>
                   <option value="TATAMOTORS">Tata Motors</option>
-                  <option value="TATASTEEL">Tata Steel</option>
-                  <option value="WIPRO">Wipro</option>
-                  <option value="ONGC">Oil and Natural Gas</option>
+                  <option value="TATASTEEL.NS">Tata Steel</option>
+                  <option value="WIPRO.NS">Wipro</option>
+                  <option value="ONGC.NS">Oil and Natural Gas</option>
                 </datalist>
               </form>
           </div>
@@ -136,29 +168,64 @@ export default function PredictionPage() {
                     <p style={{ fontSize: '0.875rem', color: 'var(--on-surface-muted)', marginTop: '4px' }}>Last 5 Days (1hr intervals)</p>
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button style={{ padding: '4px 12px', fontSize: '0.875rem', background: 'var(--surface-highest)', borderRadius: '8px', color: 'var(--on-surface)' }}>1D</button>
-                    <button style={{ padding: '4px 12px', fontSize: '0.875rem', background: 'rgba(0, 229, 255, 0.1)', border: '1px solid rgba(0,229,255,0.3)', borderRadius: '8px', color: 'var(--primary-accent)' }}>5D</button>
-                    <button style={{ padding: '4px 12px', fontSize: '0.875rem', background: 'var(--surface-highest)', borderRadius: '8px', color: 'var(--on-surface)' }}>1M</button>
+                    <button 
+                      onClick={() => setChartType('Area')}
+                      style={{ padding: '4px 12px', fontSize: '0.875rem', background: chartType === 'Area' ? 'rgba(0, 229, 255, 0.1)' : 'var(--surface-highest)', border: chartType === 'Area' ? '1px solid rgba(0,229,255,0.3)' : '1px solid transparent', borderRadius: '8px', color: chartType === 'Area' ? 'var(--primary-accent)' : 'var(--on-surface)' }}>
+                      Line
+                    </button>
+                    <button 
+                      onClick={() => setChartType('Candlestick')}
+                      style={{ padding: '4px 12px', fontSize: '0.875rem', background: chartType === 'Candlestick' ? 'rgba(0, 229, 255, 0.1)' : 'var(--surface-highest)', border: chartType === 'Candlestick' ? '1px solid rgba(0,229,255,0.3)' : '1px solid transparent', borderRadius: '8px', color: chartType === 'Candlestick' ? 'var(--primary-accent)' : 'var(--on-surface)' }}>
+                      Candles
+                    </button>
                   </div>
                 </div>
                 <div style={{ height: '300px', width: '100%' }}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={historicalData}>
-                      <defs>
-                        <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="var(--primary-accent)" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="var(--primary-accent)" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--outline-variant)" vertical={false} />
-                      <XAxis dataKey="date" stroke="var(--on-surface-muted)" />
-                      <YAxis domain={['dataMin - 20', 'dataMax + 20']} stroke="var(--on-surface-muted)" />
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: 'var(--surface-highest)', border: '1px solid var(--outline-variant)', borderRadius: '12px' }}
-                        itemStyle={{ color: 'var(--primary-accent)' }}
-                      />
-                      <Area type="monotone" dataKey="price" stroke="var(--primary-accent)" strokeWidth={3} fillOpacity={1} fill="url(#colorPrice)" />
-                    </AreaChart>
+                    {chartType === 'Area' ? (
+                      <AreaChart data={historicalData}>
+                        <defs>
+                          <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="var(--primary-accent)" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="var(--primary-accent)" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--outline-variant)" vertical={false} />
+                        <XAxis dataKey="date" stroke="var(--on-surface-muted)" />
+                        <YAxis domain={['auto', 'auto']} stroke="var(--on-surface-muted)" />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: 'var(--surface-highest)', border: '1px solid var(--outline-variant)', borderRadius: '12px' }}
+                          itemStyle={{ color: 'var(--primary-accent)' }}
+                        />
+                        <Area type="monotone" dataKey="price" stroke="var(--primary-accent)" strokeWidth={3} fillOpacity={1} fill="url(#colorPrice)" />
+                      </AreaChart>
+                    ) : (
+                      <ComposedChart data={historicalData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--outline-variant)" vertical={false} />
+                        <XAxis dataKey="date" stroke="var(--on-surface-muted)" />
+                        <YAxis domain={['auto', 'auto']} stroke="var(--on-surface-muted)" />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: 'var(--surface-highest)', border: '1px solid var(--outline-variant)', borderRadius: '12px' }}
+                          itemStyle={{ color: 'var(--primary-accent)' }}
+                          formatter={(value, name, props) => {
+                            const d = props.payload;
+                            if (name === 'wick' || name === 'body') return null; // hide drawing keys
+                            return [`O: ${d.open} | H: ${d.high} | L: ${d.low} | C: ${d.close}`];
+                          }}
+                        />
+                        {/* Wicks layer (high/low bounds as thin vertical lines) */}
+                        <Bar 
+                          dataKey="wick" 
+                          barSize={2} 
+                          shape={(props) => <rect x={props.x + props.width/2 - 1} y={props.y} width={2} height={props.height} fill={props.payload.isUp ? '#00e38b' : '#ff4d4d'} />} 
+                        />
+                        {/* Body layer (open/close bounds as thick blocks) */}
+                        <Bar 
+                          dataKey="body" 
+                          shape={<CandlestickShape />} 
+                        />
+                      </ComposedChart>
+                    )}
                   </ResponsiveContainer>
                 </div>
               </div>

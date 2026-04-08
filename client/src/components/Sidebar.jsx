@@ -4,9 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 const navLinks = [
   { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
   { icon: 'query_stats', label: 'Next Day Predictions', path: '/prediction' },
-  { icon: 'show_chart', label: 'Markets', path: '#' },
-  { icon: 'account_balance_wallet', label: 'Portfolio', path: '#' },
-  { icon: 'psychology', label: 'AI Insights', path: '#' },
+  { icon: 'online_prediction', label: 'Buy/Sell Signals', path: '/signals' },
 ]
 
 export default function Sidebar() {

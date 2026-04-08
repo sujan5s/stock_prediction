@@ -105,10 +105,23 @@ export default function Navbar() {
               placeholder="Search RELIANCE, BTC, TSLA..."
               value={search}
               onChange={e => setSearch(e.target.value)}
+              list="navbar-stocks"
             />
+            <datalist id="navbar-stocks">
+              <option value="RELIANCE.NS">Reliance Industries</option>
+              <option value="TCS.NS">Tata Consultancy Services</option>
+              <option value="HDFCBANK.NS">HDFC Bank</option>
+              <option value="ICICIBANK.NS">ICICI Bank</option>
+              <option value="INFY.NS">Infosys</option>
+              <option value="SBIN.NS">State Bank of India</option>
+              <option value="BHARTIARTL.NS">Bharti Airtel</option>
+              <option value="ITC.NS">ITC Limited</option>
+              <option value="HINDUNILVR.NS">Hindustan Unilever</option>
+              <option value="LT.NS">Larsen & Toubro</option>
+            </datalist>
           </div>
 
-          {/* Notifications */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
             style={{ padding: '8px', color: '#dfe2f1', borderRadius: '9999px', transition: 'background 0.2s' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'rgba(49,53,64,0.5)')}
@@ -141,6 +154,7 @@ export default function Navbar() {
             {user ? user.fullName.charAt(0).toUpperCase() : 'U'}
           </Link>
         </div>
+      </div>
       </div>
     </nav>
   )
