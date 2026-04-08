@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import ProfilePage from './pages/ProfilePage'
 import PredictionPage from './pages/PredictionPage'
+import UpDownPage from "./pages/UpDownPage";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -27,6 +28,11 @@ function App() {
         <Route path="/prediction" element={
           <ProtectedRoute>
             <PredictionPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/updown" element={
+          <ProtectedRoute>
+            <UpDownPage />
           </ProtectedRoute>
         } />
         <Route path="/profile" element={

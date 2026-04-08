@@ -19,7 +19,7 @@ export default function PredictionPage() {
     setLoading(true);
     setErrorText('');
     setPrediction(null);
-    
+
     try {
       const response = await fetch('http://localhost:5000/api/predict', {
         method: 'POST',
@@ -27,9 +27,9 @@ export default function PredictionPage() {
         body: JSON.stringify({ ticker })
       });
       const data = await response.json();
-      
+
       if (data.error) throw new Error(data.error);
-      
+
       setPrediction({
         currentPrice: data.current_price,
         predictedPrice: data.predicted_price,
@@ -37,15 +37,15 @@ export default function PredictionPage() {
         aiInsight: data.aiInsight,
         metrics: data.metrics
       });
-      
+
       // We don't have historical graph data mapped from backend yet, so we keep it blank or make a dummy one just for visual, but won't show random pricing.
       let mockGraph = [];
       let currentPrice = data.current_price;
-      for (let i=0; i<5; i++) {
-        mockGraph.push({ date: `Day ${i+1}`, price: Math.round(currentPrice * (1 + (Math.random() * 0.02 - 0.01))) });
+      for (let i = 0; i < 5; i++) {
+        mockGraph.push({ date: `Day ${i + 1}`, price: Math.round(currentPrice * (1 + (Math.random() * 0.02 - 0.01))) });
       }
       setHistoricalData(mockGraph);
-      
+
     } catch (error) {
       console.error(error);
       setErrorText("Could not fetch data for this ticker. Please check the spelling or try a valid Indian Stock Symbol like RELIANCE, TCS.");
@@ -60,7 +60,7 @@ export default function PredictionPage() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if(searchValue.trim()) setStock(searchValue.toUpperCase());
+    if (searchValue.trim()) setStock(searchValue.toUpperCase());
   };
 
   const isUp = prediction && (prediction.predictedPrice >= prediction.currentPrice);
@@ -72,7 +72,7 @@ export default function PredictionPage() {
       <div className="app-body">
         <Sidebar />
         <main className="app-main">
-          
+
           {/* Header / Search */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px', paddingBottom: '16px', borderBottom: '1px solid var(--outline-variant)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -82,52 +82,52 @@ export default function PredictionPage() {
               </h1>
             </div>
             <form onSubmit={handleSearch} style={{ position: 'relative', width: '320px' }}>
-                <div style={{ position: 'absolute', top: 0, bottom: 0, left: '16px', display: 'flex', alignItems: 'center' }}>
-                  <Search style={{ width: '20px', height: '20px', color: 'var(--on-surface-muted)' }} />
-                </div>
-                <input
-                  list="stock-tickers"
-                  type="text"
-                  style={{
-                    background: 'var(--surface-high)',
-                    border: '1px solid var(--outline-variant)',
-                    color: 'white',
-                    borderRadius: '9999px',
-                    width: '100%',
-                    padding: '10px 16px 10px 48px',
-                    outline: 'none',
-                  }}
-                  placeholder="Search Stock (e.g., RELIANCE)"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                />
-                <datalist id="stock-tickers">
-                  <option value="RELIANCE">Reliance Industries</option>
-                  <option value="TCS">Tata Consultancy</option>
-                  <option value="HDFCBANK">HDFC Bank</option>
-                  <option value="ICICIBANK">ICICI Bank</option>
-                  <option value="INFY">Infosys</option>
-                  <option value="SBIN">State Bank of India</option>
-                  <option value="BHARTIARTL">Bharti Airtel</option>
-                  <option value="ITC">ITC Limited</option>
-                  <option value="HINDUNILVR">Hindustan Unilever</option>
-                  <option value="LT">Larsen & Toubro</option>
-                  <option value="BAJFINANCE">Bajaj Finance</option>
-                  <option value="AXISBANK">Axis Bank</option>
-                  <option value="HCLTECH">HCL Technologies</option>
-                  <option value="MARUTI">Maruti Suzuki</option>
-                  <option value="TATAMOTORS">Tata Motors</option>
-                  <option value="TATASTEEL">Tata Steel</option>
-                  <option value="WIPRO">Wipro</option>
-                  <option value="ONGC">Oil and Natural Gas</option>
-                </datalist>
-              </form>
+              <div style={{ position: 'absolute', top: 0, bottom: 0, left: '16px', display: 'flex', alignItems: 'center' }}>
+                <Search style={{ width: '20px', height: '20px', color: 'var(--on-surface-muted)' }} />
+              </div>
+              <input
+                list="stock-tickers"
+                type="text"
+                style={{
+                  background: 'var(--surface-high)',
+                  border: '1px solid var(--outline-variant)',
+                  color: 'white',
+                  borderRadius: '9999px',
+                  width: '100%',
+                  padding: '10px 16px 10px 48px',
+                  outline: 'none',
+                }}
+                placeholder="Search Stock (e.g., RELIANCE)"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+              />
+              <datalist id="stock-tickers">
+                <option value="RELIANCE">Reliance Industries</option>
+                <option value="TCS">Tata Consultancy</option>
+                <option value="HDFCBANK">HDFC Bank</option>
+                <option value="ICICIBANK">ICICI Bank</option>
+                <option value="INFY">Infosys</option>
+                <option value="SBIN">State Bank of India</option>
+                <option value="BHARTIARTL">Bharti Airtel</option>
+                <option value="ITC">ITC Limited</option>
+                <option value="HINDUNILVR">Hindustan Unilever</option>
+                <option value="LT">Larsen & Toubro</option>
+                <option value="BAJFINANCE">Bajaj Finance</option>
+                <option value="AXISBANK">Axis Bank</option>
+                <option value="HCLTECH">HCL Technologies</option>
+                <option value="MARUTI">Maruti Suzuki</option>
+                <option value="TATAMOTORS">Tata Motors</option>
+                <option value="TATASTEEL">Tata Steel</option>
+                <option value="WIPRO">Wipro</option>
+                <option value="ONGC">Oil and Natural Gas</option>
+              </datalist>
+            </form>
           </div>
 
           {/* Main Dashboard Layout */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div className="dashboard-grid">
-              
+
               {/* Left Column: Chart */}
               <div className="glass dashboard-col" style={{ flex: 2, padding: '24px', borderRadius: '24px', border: '1px solid var(--outline-variant)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -142,18 +142,18 @@ export default function PredictionPage() {
                   </div>
                 </div>
                 <div style={{ height: '300px', width: '100%' }}>
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minHeight={0} minWidth={0}>
                     <AreaChart data={historicalData}>
                       <defs>
                         <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="var(--primary-accent)" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="var(--primary-accent)" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="var(--primary-accent)" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="var(--primary-accent)" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--outline-variant)" vertical={false} />
                       <XAxis dataKey="date" stroke="var(--on-surface-muted)" />
                       <YAxis domain={['dataMin - 20', 'dataMax + 20']} stroke="var(--on-surface-muted)" />
-                      <Tooltip 
+                      <Tooltip
                         contentStyle={{ backgroundColor: 'var(--surface-highest)', border: '1px solid var(--outline-variant)', borderRadius: '12px' }}
                         itemStyle={{ color: 'var(--primary-accent)' }}
                       />
@@ -164,10 +164,10 @@ export default function PredictionPage() {
               </div>
 
               {/* Right Column: Prediction Card */}
-              <div className="glass dashboard-col" style={{ 
-                flex: 1, 
-                padding: '24px', 
-                borderRadius: '24px', 
+              <div className="glass dashboard-col" style={{
+                flex: 1,
+                padding: '24px',
+                borderRadius: '24px',
                 border: '1px solid var(--outline-variant)',
                 position: 'relative',
                 overflow: 'hidden',
@@ -204,7 +204,7 @@ export default function PredictionPage() {
                         <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.875rem', marginBottom: '4px' }}>Current Price</p>
                         <p style={{ fontSize: '2rem', fontWeight: 300, color: '#fff' }}>₹{prediction.currentPrice}</p>
                       </div>
-                      
+
                       <div style={{ position: 'relative', zIndex: 10, padding: '20px', background: 'var(--bg)', borderRadius: '16px', border: '1px solid var(--outline-variant)' }}>
                         <p style={{ color: 'var(--on-surface-muted)', fontSize: '0.875rem', marginBottom: '4px' }}>Predicted Next Close</p>
                         <div style={{ display: 'flex', alignItems: 'flex-end', gap: '12px' }}>
@@ -224,12 +224,12 @@ export default function PredictionPage() {
                           <span style={{ color: 'var(--primary)', fontWeight: 600 }}>{prediction.confidence}%</span>
                         </div>
                         <div style={{ width: '100%', background: 'var(--surface-highest)', borderRadius: '9999px', height: '8px' }}>
-                          <div 
-                            style={{ 
-                              background: 'linear-gradient(to right, var(--primary), var(--primary-accent))', 
-                              height: '8px', 
-                              borderRadius: '9999px', 
-                              width: `${prediction.confidence}%` 
+                          <div
+                            style={{
+                              background: 'linear-gradient(to right, var(--primary), var(--primary-accent))',
+                              height: '8px',
+                              borderRadius: '9999px',
+                              width: `${prediction.confidence}%`
                             }}
                           />
                         </div>
@@ -243,7 +243,7 @@ export default function PredictionPage() {
             {/* Bottom Layout */}
             {prediction && (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', marginTop: '16px' }}>
-                
+
                 {/* Key Metrics */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div className="glass" style={{ padding: '20px', borderRadius: '16px', border: '1px solid var(--outline-variant)' }}>
@@ -266,7 +266,7 @@ export default function PredictionPage() {
 
                 {/* AI Insights Panel */}
                 <div className="glass" style={{
-                  padding: '24px', borderRadius: '16px', border: '1px solid var(--outline-variant)', 
+                  padding: '24px', borderRadius: '16px', border: '1px solid var(--outline-variant)',
                   display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', overflow: 'hidden'
                 }}>
                   <div style={{ position: 'absolute', top: 0, right: 0, width: '128px', height: '128px', background: 'var(--primary)', filter: 'blur(80px)', opacity: 0.1, borderRadius: '50%' }} />
@@ -280,7 +280,7 @@ export default function PredictionPage() {
                     "{prediction.aiInsight}"
                   </p>
                 </div>
-                
+
               </div>
             )}
           </div>
