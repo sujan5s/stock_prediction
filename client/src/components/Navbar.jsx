@@ -32,8 +32,8 @@ export default function Navbar() {
     // Generate daily dynamic notifications
     const today = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
     setNotifications([
-      { id: 1, title: 'Daily AI Update Ready', message: "Your AI models have successfully processed the latest market data for \. Check the Dashboard to view tomorrow's forecast!", time: '10m ago', unread: true },
-      { id: 2, title: 'Volatility Alert', message: 'High volatility detected in NIFTY 50 based on yesterdays close. Stay alert on sudden swings.', time: '2h ago', unread: true },
+      { id: 1, title: 'Daily AI Update Ready', message: `Your AI models have successfully processed the latest market data for ${today}. Check the Dashboard to view tomorrow's forecast!`, time: '10m ago', unread: true },
+      { id: 2, title: 'Volatility Alert', message: `High volatility detected in NIFTY 50 based on yesterday's close. Stay alert on sudden swings.`, time: '2h ago', unread: true },
       { id: 3, title: 'Welcome to StockAI', message: 'Your personalized trading models have been calibrated.', time: '1d ago', unread: false }
     ])
 
@@ -123,6 +123,7 @@ export default function Navbar() {
             {/* Notification Wrapper */}
             <div style={{ position: 'relative' }} ref={notifRef}>
               <button
+                type="button"
                 onClick={() => setShowNotifications(!showNotifications)}
                 style={{ 
                   padding: '8px', color: '#dfe2f1', borderRadius: '50%', 
@@ -135,8 +136,8 @@ export default function Navbar() {
                 <span className="material-symbols-outlined">notifications</span>
                 {unreadCount > 0 && (
                   <span style={{
-                    position: 'absolute', top: '2px', right: '4px', background: '#ff3b30', color: '#fff',
-                    borderRadius: '50%', fontSize: '10px', fontWeight: 'bold', width: '16px', height: '16px',
+                    position: 'absolute', top: '0', right: '0', background: '#ff3b30', color: '#fff',
+                    borderRadius: '50%', fontSize: '10px', fontWeight: 'bold', width: '18px', height: '18px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 5px rgba(255,59,48,0.5)'
                   }}>
                     {unreadCount}
@@ -147,10 +148,10 @@ export default function Navbar() {
               {/* Notification Dropdown */}
               {showNotifications && (
                 <div style={{
-                  position: 'absolute', top: '50px', right: '0', width: '320px',
+                  position: 'absolute', top: '120%', right: '0', width: '350px',
                   background: '#1c1f2a', border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                  zIndex: 100, overflow: 'hidden', display: 'flex', flexDirection: 'column'
+                  zIndex: 9999, overflow: 'hidden', display: 'flex', flexDirection: 'column'
                 }}>
                   <div style={{ 
                     padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.05)', 
